@@ -1,0 +1,9 @@
+{
+  "eablokker.tabsSidebar.config.customKindGroupsOrder" : [
+    "javascript"
+  ],
+  "eablokker.tabsSidebar.config.customTabOrder" : [
+    "\/Users\/garybuckle\/Coding\/API\/src\/App.jsx"
+  ],
+  "prettier.default-config.singleQuote" : "Enable"
+}
