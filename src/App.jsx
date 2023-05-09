@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
-
 import './App.css';
+import axios from 'axios';
 
-const API_ENDPOINT =
-  'http://api.geonet.org.nz/news/geonet                                                                 ';
-
+const API_ENDPOINT = 'http://api.geonet.org.nz/news/geonet';
+const requestOptions = {
+  headers: { 'Content-Type': 'application/json' },
+};
 const apiReducer = (state, action) => {
   switch (action.type) {
     case 'API_FETCH_INIT':
@@ -34,30 +35,40 @@ const apiReducer = (state, action) => {
 };
 
 function App() {
+  const [url, setUrl] = React.useState(`${API_ENDPOINT}`);
   const [apiResult, dispatchApiResult] = React.useReducer(apiReducer, {
     data: [],
     isLoading: false,
     isError: false,
   });
-  React.useEffect(() => {
+
+  const handleFetchAPI = React.useCallback(async () => {
     dispatchApiResult({ type: 'API_FETCH_INIT' });
-    fetch(`${API_ENDPOINT}`)
-      .then((response) => response.json())
-      .then((result) => {
-        dispatchApiResult({ type: 'API_FETCH_SUCCESS', payload: result.hits });
-      })
-      .catch(() => {
-        dispatchApiResult({ type: 'API_FETCH_FAILURE' });
+
+    try {
+      const result = await axios.get(url);
+
+      dispatchApiResult({
+        type: 'API_FETCH_SUCCESS',
+        payload: result.data.hits,
       });
-  }, []);
+    } catch {
+      dispatchApiResult({ type: 'API_FETCH_FAILURE' });
+    }
+  }, [url]);
+
+  React.useEffect(() => {
+    handleFetchAPI();
+  }, [handleFetchAPI]);
   return (
     <>
       <div>
-        <h1>API GEONET</h1>
+        <h1>API GEONET V2.0</h1>
         <hr />
-        {apiResult.isError && <p>Ooops!! Unable to load data</p>}
+
+        {apiResult.isError && <p>Oops unable to load data</p>}
         {apiResult.isLoading ? (
-          '(<p>Fetching Content... hold tight!</p>'
+          <p>Loading data ...</p>
         ) : (
           <h2>
             <List list={apiResult.data} />
@@ -68,8 +79,18 @@ function App() {
   );
 }
 
-const List = (list) => {
-  <ul>The list of items</ul>;
-};
-const Item = () => {};
+const List = ({ list }) => (
+  <ul>
+    {list.map((item) => (
+      <Item key={item.title} item={item} />
+    ))}
+  </ul>
+);
+
+const Item = ({ item }) => (
+  <li>
+    <p>{item.title}</p>
+  </li>
+);
+
 export default App;
