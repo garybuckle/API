@@ -79,13 +79,7 @@ function App() {
   );
 }
 
-const List = ({ list }) => (
-  <ul>
-    {list.map((item) => (
-      <Item key={item.title} item={item} />
-    ))}
-  </ul>
-);
+const List = ({ list }) => <ul>{}</ul>;
 
 const Item = ({ item }) => (
   <li>
